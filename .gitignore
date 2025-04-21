@@ -1,0 +1,55 @@
+# Bytecode & metadata
+__pycache__/
+*.py[cod]
+*.pyo
+*.so
+*.egg
+*.egg-info/
+*.dist-info/
+
+# Poetry
+poetry.lock
+
+# Virtualenvs (just in case)
+.env
+.venv/
+venv/
+
+# Environment & secrets
+.env.*
+!.env.example
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+
+# Test/cache artifacts
+.coverage
+coverage.xml
+htmlcov/
+pytest_cache/
+
+# Docker
+*.log
+docker-compose.override.yml
+
+# Build artifacts
+build/
+dist/
+
+# SQLite or dev DBs
+*.db
+*.sqlite3
+
+# Redis/Postgres volumes (if ever mapped to local)
+redis_data/
+postgres_data/
+
+# Misc
+*.bak
+*.tmp

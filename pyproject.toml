@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "atropos-health-interview"
+version = "0.1.0"
+description = ""
+authors = ["Max Buck <maxbuckdeveloper@gmail.com>"]
+readme = "README.md"
+packages = [{include = "atropos"}]
+
+[tool.poetry.dependencies]
+python = "3.13.2"
+pytest = "^8.3.5"
+fastapi = "^0.115.12"
+uvicorn = "^0.34.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

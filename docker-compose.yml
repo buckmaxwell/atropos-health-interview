@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+  web:
+    build: .
+    container_name: atropos-api
+    command: uvicorn atropos.main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+      - db
+    volumes:
+      - .:/app
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/atropos
+
+  redis:
+    image: redis:7
+    container_name: atropos-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  db:
+    image: postgres:16
+    container_name: atropos-postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: atropos
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  redis_data:
+    name: atropos-redis-data
+  postgres_data:
+    name: atropos-postgres-data
