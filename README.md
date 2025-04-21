@@ -42,13 +42,6 @@ Please reach out to with any questions
 
 This Task Management API allows the initiation of tasks via a RESTful JSON API. Tasks have a type, and the API is written to be flexible, allowing for the addition of new task types in the future, for example, data processing tasks, report generation, or video processing. 
 
-### Tasks
-
-`data processing tasks, report generation, video processing).`
-
-- [] Tasks can be created 
-- [] Task status can be checked
-- [] Task 'results' can be retrieved
 
 ### Task Creation 
 
