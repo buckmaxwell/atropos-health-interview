@@ -1,0 +1,154 @@
+# Recruiting Assessment – Atropos Health, Engineering Manager Role
+
+## The Assignment (From Atropos Health Team)
+
+### Instructions
+Build an API to manage long running tasks
+Implement operations that can at a minimum:
+
+- Create tasks
+- Check  task status
+- Retrieve task results
+
+Assume tasks may take a significant amount of time to complete (e.g., data processing tasks, report generation, video processing).  
+
+
+### Guidelines
+
+You're free to choose any language/platform/stack, just be prepared to talk about them.
+
+Assume that this will be production code that will need to be supported by a separate infrastructure team.
+
+Provide some information about how to deploy the service locally for our team to be able to review
+
+### [OPTIONAL] - Extra points for using:
+
+- A containerization technology like Docker
+- Testing framework
+- Some minimal front-end
+- Integration with a cloud provider's services that you think can help
+
+### Presentation
+
+Once you've created an API, please submit your artifacts via the submission link.  We'll reach out to you to schedule a the next interview to go over your submission. Be prepared to talk about the technology you used and the choices you made. 
+
+Please note: Reviewers may decide that your submission does meet our coding standards and end the interview process this stage.
+
+### Questions
+Please reach out to with any questions
+
+---
+## Implementation (Max)
+
+This Task Management API allows the initiation of tasks via a RESTful JSON API. Tasks have a type, and the API is written to be flexible, allowing for the addition of new task types in the future, for example, data processing tasks, report generation, or video processing. 
+
+### Tasks
+
+`data processing tasks, report generation, video processing).`
+
+- [] Tasks can be created 
+- [] Task status can be checked
+- [] Task 'results' can be retrieved
+
+### Task Creation 
+
+To initiate a task, issue a request that looks like the example below. Allowed values for type and data can be determined by making a request to `/task-types`.
+
+```http
+POST /tasks
+```
+```json
+{
+  "type": "data-processing",
+  "data": {
+    "file_url": "https://example.com/my-data.csv",
+    "delimiter": ","
+  }
+}
+```
+
+The expected response for all tasks will be `202 Accepted` header with a JSON body with some information about the initiated task,
+```json
+{
+  "task_id": "123xyz",
+  "status": "pending",
+  "type": "data-processing",
+  "links": {
+    "status": "/tasks/123xyz/status",
+    "result": "/tasks/123xyz/result"
+  }
+}
+```
+
+### Retrieving Available Task Types
+
+To retrieve a list of possible tasks types, issue a GET request,
+```http
+GET /task-types
+```
+
+That endpoint will respond with a list of allowed task schemas. Those schemas use the spec at https://json-schema.org/specification. For example,
+```json
+[
+  {
+    "type": "data-processing",
+    "description": "Processes a CSV file from a public URL and generates a summary report.",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "required": ["file_url"],
+      "properties": {
+        "file_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Publicly accessible URL pointing to the input CSV file."
+        },
+        "delimiter": {
+          "type": "string",
+          "default": ",",
+          "description": "Optional delimiter used in the CSV file."
+        }
+      }
+    }
+  },
+  ...
+]
+```
+
+### Retrieving Task Status
+
+```http
+GET /tasks/123xyz/status
+```
+
+The response could be different whether the status is pending, in-progress, succeeded or failed. One possible example response,
+```json
+{
+  "task_id": "123xyz",
+  "status": "in-progress",
+  "type": "data-processing",
+  "message": "Analyzing CSV rows..."
+}
+```
+
+### Retrieving Task Results
+
+Tasks may have side effects. (for example a generated report) and those side effects could be downloaded from a link when extant. In that case, a 200 response code and a json body with a `download_link` would be appropriate. If there are no side effects, `download_link` may not be present. In all cases the json body will also include a `status` key which will correspond to `succeeded` or `failed`. A `message` key with a description of the status may also be included.
+
+```http
+GET /tasks/123xyz/result
+```
+
+Example response,
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+```
+```json
+{
+  "download_url": "https://s3.aws.example.com/myserver?mysig=123xyz&file=task_123xyz",
+  "status": "succeeded",
+  "message": "Report successfully generated."
+}
+```
+
