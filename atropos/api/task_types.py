@@ -1,18 +1,15 @@
 from fastapi import APIRouter
+from typing import List
 
+from atropos.api.schemas.task_type import TaskType
+from atropos.api.services.get_task_types import GetTaskTypes
 
 router = APIRouter(prefix="/task-types", tags=["task-types"])
 
 
-@router.get("/task-types")
+@router.get("/", response_model=List[TaskType])
 def get_task_types():
     """
-    Get all task types.
+    Return all supported task types and their input schemas.
     """
-    return {
-        "task_types": [
-            "task_type_1",
-            "task_type_2",
-            "task_type_3",
-        ]
-    }
+    return GetTaskTypes()()

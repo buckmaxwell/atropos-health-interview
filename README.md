@@ -84,27 +84,38 @@ That endpoint will respond with a list of allowed task schemas. Those schemas us
 ```json
 [
   {
-    "type": "data-processing",
     "description": "Processes a CSV file from a public URL and generates a summary report.",
-    "schema": {
+    "payload_schema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
-      "type": "object",
-      "required": ["file_url"],
       "properties": {
-        "file_url": {
-          "type": "string",
-          "format": "uri",
-          "description": "Publicly accessible URL pointing to the input CSV file."
-        },
         "delimiter": {
-          "type": "string",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
           "default": ",",
-          "description": "Optional delimiter used in the CSV file."
+          "description": "Optional delimiter used in the CSV file.",
+          "title": "Delimiter"
+        },
+        "file_url": {
+          "description": "Publicly accessible URL pointing to the input CSV file.",
+          "format": "uri",
+          "maxLength": 2083,
+          "minLength": 1,
+          "title": "File Url",
+          "type": "string"
         }
-      }
-    }
-  },
-  ...
+      },
+      "required": ["file_url"],
+      "title": "Data Processing Input Schema",
+      "type": "object"
+    },
+    "type": "data-processing"
+  }
 ]
 ```
 

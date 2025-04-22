@@ -1,25 +1,19 @@
 from pydantic import BaseModel
-from typing import Literal
-
-
-class TaskResponseLinks(BaseModel):
-    status: str
-    result: str
+from typing import Literal, Optional
+from atropos.api.models import Task as TaskRecord
 
 
 class TaskResponse(BaseModel):
     task_id: str
-    status: Literal["pending"]
+    status: Literal["pending", "in-progress", "succeeded", "failed"]
     type: str
-    links: TaskResponseLinks
+    download_url: Optional[str] = None
 
     @classmethod
-    def from_task(cls, task_id: str, task_type: str) -> "TaskResponse":
+    def from_task(cls, task: TaskRecord) -> "TaskResponse":
         return cls(
-            task_id=task_id,
-            status="pending",
-            type=task_type,
-            links=TaskResponseLinks(
-                status=f"/tasks/{task_id}/status", result=f"/tasks/{task_id}/result"
-            ),
+            task_id=task.id,
+            status=task.status,
+            type=task.type,
+            download_url=task.download_url,
         )

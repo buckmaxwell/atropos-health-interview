@@ -1,29 +1,18 @@
-from sqlmodel import Session, select
-from atropos.db import engine
-
 from atropos.api.models.task import Task
-
 from atropos.api.services.create_record import CreateRecord
+from atropos.api.services.get_record_by_id import GetRecordById
 
 TEST_TASK_TYPE = "test_task_type"
 
 
-def clear_test_tasks():
-    with Session(engine) as session:
-        session.exec(Task.__table__.delete().where(Task.type == TEST_TASK_TYPE))
-        session.commit()
+def test_create_record_creates_record_in_db(db_session):
+    task = Task(type=TEST_TASK_TYPE)
 
+    # Use session-aware services
+    CreateRecord()(task, db_session)
 
-def test_create_record_creates_record_in_db():
-    clear_test_tasks()
+    result = GetRecordById()(Task, task.id, db_session)
 
-    create_record = CreateRecord()
-    create_record(Task(type=TEST_TASK_TYPE))
-
-    with Session(engine) as session:
-        task = session.exec(select(Task).where(Task.type == TEST_TASK_TYPE)).first()
-        assert task is not None
-        assert task.type == TEST_TASK_TYPE
-        assert task.id is not None
-
-    clear_test_tasks()
+    assert result is not None
+    assert result.id == task.id
+    assert result.type == TEST_TASK_TYPE
