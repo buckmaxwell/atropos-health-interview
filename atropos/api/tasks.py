@@ -12,3 +12,17 @@ def create_task(request: TaskRequest):
     task = CreateTaskRecord()(request.type)
     EnqueueTask()(task.id, task.type, request.data)
     return TaskResponse.from_task(task.id, task.type)
+
+
+@router.get("/task-types")
+def get_task_types():
+    """
+    Get all task types.
+    """
+    return {
+        "task_types": [
+            "task_type_1",
+            "task_type_2",
+            "task_type_3",
+        ]
+    }

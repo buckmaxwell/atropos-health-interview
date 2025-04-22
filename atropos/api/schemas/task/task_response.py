@@ -1,10 +1,5 @@
 from pydantic import BaseModel
-from typing import Literal, Dict
-
-
-class TaskRequest(BaseModel):
-    type: str
-    data: Dict
+from typing import Literal
 
 
 class TaskResponseLinks(BaseModel):
