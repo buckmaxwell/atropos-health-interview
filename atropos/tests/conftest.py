@@ -3,14 +3,20 @@ import pytest
 from fastapi.testclient import TestClient
 from redis import Redis
 
-# from sqlalchemy.orm import Session as OrmSession
 from sqlmodel import Session as OrmSession
+from sqlmodel import SQLModel
+
 
 from atropos.main import app
 from atropos.db import engine
 
 # Constants for test data
 TEST_TASK_QUEUE = "test:task:queue"
+
+
+@pytest.fixture(scope="session", autouse=True)
+def setup_test_db():
+    SQLModel.metadata.create_all(engine)
 
 
 # FastAPI client
