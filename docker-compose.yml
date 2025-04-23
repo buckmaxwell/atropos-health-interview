@@ -16,6 +16,14 @@ services:
       - REDIS_URL=redis://redis:6379/0
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/atropos
 
+  worker:
+    build: .
+    container_name: atropos-worker
+    command: poetry run celery -A atropos.celery_app worker --loglevel=info
+    depends_on:
+      - redis
+      - db
+
   redis:
     image: redis:7
     container_name: atropos-redis

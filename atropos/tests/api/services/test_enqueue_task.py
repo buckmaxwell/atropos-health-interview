@@ -1,19 +1,14 @@
-from atropos.api.services.enqueue_task import EnqueueTask
-from atropos.tests.conftest import (
-    get_redis_client,
-    TEST_TASK_QUEUE,
-)
+from unittest.mock import patch
+from atropos.api.services.dispatch_task import DispatchTask
 
 
-def test_enqueue_task_adds_task_to_redis():
-    task_id = "test_task_id"
-    task_type = "test_task_type"
-    data = {"key": "value"}
+@patch("atropos.api.services.dispatch_task.dispatch_task_helper")
+def test_dispatch_task_calls_celery_delay(mock_dispatch_task):
+    task_id = "test-task-id"
+    task_type = "data-processing"
+    data = {"foo": "bar"}
 
-    enqueue_task_service = EnqueueTask(task_queue=TEST_TASK_QUEUE)
-    enqueue_task_service(task_id, task_type, data)
+    dispatcher = DispatchTask()
+    dispatcher(task_id, task_type, data)
 
-    redis_client = get_redis_client()
-    queue_length = redis_client.llen(TEST_TASK_QUEUE)
-
-    assert queue_length == 1
+    mock_dispatch_task.delay.assert_called_once_with(task_id, task_type, data)

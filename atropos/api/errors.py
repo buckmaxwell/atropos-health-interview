@@ -8,6 +8,10 @@ class RecordNotFoundError(AtroposError):
     pass
 
 
+class UnregisteredTaskTypeError(AtroposError):
+    pass
+
+
 class InvalidTaskTypeError(AtroposError):
     def __init__(self, task_type: str, valid_types: list[str]):
         self.task_type = task_type

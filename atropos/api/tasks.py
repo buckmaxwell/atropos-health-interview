@@ -5,7 +5,7 @@ from atropos.db import engine
 
 from atropos.api.schemas.task import TaskRequest, TaskResponse
 from atropos.api.services.create_task_record import CreateTaskRecord
-from atropos.api.services.enqueue_task import EnqueueTask
+from atropos.api.services.dispatch_task import DispatchTask
 from atropos.api.services.get_task_by_id import GetTaskById
 
 
@@ -16,7 +16,8 @@ router = APIRouter(prefix="/tasks", tags=["tasks"])
 def create_task(request: TaskRequest):
     with Session(engine) as session:
         task = CreateTaskRecord()(request.type, session)
-    EnqueueTask()(task.id, task.type, request.data)
+
+    DispatchTask()(task.id, task.type, request.data)
     return TaskResponse.from_task(task)
 
 

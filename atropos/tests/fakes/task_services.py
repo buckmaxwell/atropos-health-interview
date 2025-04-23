@@ -13,7 +13,7 @@ class FakeCreateTaskRecord:
         return self.return_value
 
 
-class FakeEnqueueTask:
+class FakeDispatchTask:
     def __init__(self):
         self.called_with = []
 

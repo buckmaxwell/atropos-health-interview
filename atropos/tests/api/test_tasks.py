@@ -6,16 +6,16 @@ from atropos.api.services.get_task_by_id import GetTaskById
 
 from atropos.tests.fakes.task_services import (
     FakeCreateTaskRecord,
-    FakeEnqueueTask,
+    FakeDispatchTask,
     FakeGetTaskById,
     FakeGetTaskByIdRaises,
 )
 
 
-@patch("atropos.api.tasks.EnqueueTask")
+@patch("atropos.api.tasks.DispatchTask")
 @patch("atropos.api.tasks.CreateTaskRecord")
-def test_post_tasks_creates_task_and_queues_it(
-    mock_create_cls, mock_enqueue_cls, client
+def test_post_tasks_creates_task_and_dispatches(
+    mock_create_cls, mock_dispatch_cls, client
 ):
     task = Task(
         id="abc123",
@@ -25,10 +25,10 @@ def test_post_tasks_creates_task_and_queues_it(
     )
 
     fake_create = FakeCreateTaskRecord(return_value=task)
-    fake_enqueue = FakeEnqueueTask()
+    fake_dispatch = FakeDispatchTask()
 
     mock_create_cls.return_value = fake_create
-    mock_enqueue_cls.return_value = fake_enqueue
+    mock_dispatch_cls.return_value = fake_dispatch
 
     response = client.post(
         "/tasks",
@@ -48,11 +48,11 @@ def test_post_tasks_creates_task_and_queues_it(
 
     # Validate fake services were used
     assert len(fake_create.called_with) == 1
-    assert fake_create.called_with[0][0] == "data-processing"  # task_type
-    assert fake_create.called_with[0][1] is not None  # session
+    assert fake_create.called_with[0][0] == "data-processing"
+    assert fake_create.called_with[0][1] is not None
 
-    assert len(fake_enqueue.called_with) == 1
-    assert fake_enqueue.called_with[0] == (
+    assert len(fake_dispatch.called_with) == 1
+    assert fake_dispatch.called_with[0] == (
         "abc123",
         "data-processing",
         {"file_url": "https://example.com/my.csv"},
